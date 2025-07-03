@@ -1,7 +1,12 @@
 # bcl_convert
 [![DockerHub](https://img.shields.io/docker/pulls/ctbushman/bcl_convert)](https://hub.docker.com/repository/docker/ctbushman/bcl_convert)
 
-Illumina BCL Convert software containerized for cross platform use.
+Illumina BCL Convert software containerized for cross-platform use with Docker
+and Singularity/Apptainer, enabling Mac, Windows and Linux workflows.
+
+> **Note**
+> bcl-convert is a commercial tool from Illumina. The container images provided
+> here are community maintained and are not provided nor supported by Illumina.
 
 ## Usage
 
@@ -75,3 +80,14 @@ docker push $DOCKERHUB_USERNAME/bcl_convert:$VERSION
 docker tag $DOCKERHUB_USERNAME/bcl_convert:$VERSION $DOCKERHUB_USERNAME/bcl_convert:latest
 docker push $DOCKERHUB_USERNAME/bcl_convert:latest
 ```
+
+## Search keywords
+
+For easier discovery by users looking for a portable BCL Convert solution,
+below are some terms associated with this project:
+
+- cross platform BCL Convert
+- bcl-convert Docker container
+- Apptainer or Singularity BCL Convert
+- HPC and Slurm BCL Convert
+- Windows, macOS and Linux BCL Convert container
