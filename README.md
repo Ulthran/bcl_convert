@@ -1,7 +1,7 @@
 # bcl_convert
-Illumina BCL Convert software containerized for cross platform use.
-
 [![DockerHub](https://img.shields.io/docker/pulls/ctbushman/bcl_convert)](https://hub.docker.com/repository/docker/ctbushman/bcl_convert)
+
+Illumina BCL Convert software containerized for cross platform use.
 
 ## Usage
 
