@@ -3,13 +3,19 @@
 import re
 import sys
 import urllib.request
+import urllib.error
 
 DOWNLOADS_URL = "https://support.illumina.com/sequencing/sequencing_software/bcl-convert/downloads.html"
 
 pattern = re.compile(r'(https?://[^"\s]*bcl-convert-(\d+(?:\.\d+)*)-2\.el7\.x86_64\.rpm)')
 
-with urllib.request.urlopen(DOWNLOADS_URL) as resp:
-    html = resp.read().decode()
+try:
+    with urllib.request.urlopen(DOWNLOADS_URL) as resp:
+        html = resp.read().decode()
+except urllib.error.URLError as e:
+    sys.exit(f"Failed to fetch the downloads page: {e.reason}")
+except urllib.error.HTTPError as e:
+    sys.exit(f"HTTP error occurred: {e.code} {e.reason}")
 
 best_version = None
 best_url = None
