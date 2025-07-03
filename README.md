@@ -22,6 +22,8 @@ docker run --rm -v "$PWD":/data ctbushman/bcl_convert bcl-convert --help
 You can create a Singularity/Apptainer image from the Docker Hub image:
 
 ```bash
+# You may need to load the module for apptainer/singularity (something like `module load singularity`)
+# If you have singularity instead of apptainer, replace the command in the below examples
 apptainer build bcl_convert.sif docker://ctbushman/bcl_convert:latest
 ```
 
