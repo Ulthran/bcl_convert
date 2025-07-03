@@ -32,14 +32,44 @@ jobs:
           else
             echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
-      - name: Download RPM
+      - name: Generate manual build instructions
         if: steps.check.outputs.exists == 'false'
         run: |
-          curl -L "${{ steps.latest.outputs.url }}" -o "bcl-convert-${{ steps.latest.outputs.version }}-2.el7.x86_64.rpm"
-      - name: Build and push
-        if: steps.check.outputs.exists == 'false'
-        run: |
-          docker build --build-arg BCLCONVERT_VERSION=${{ steps.latest.outputs.version }} -t ctbushman/bcl_convert:${{ steps.latest.outputs.version }} .
-          docker push ctbushman/bcl_convert:${{ steps.latest.outputs.version }}
-          docker tag ctbushman/bcl_convert:${{ steps.latest.outputs.version }} ctbushman/bcl_convert:latest
+          VERSION="${{ steps.latest.outputs.version }}"
+          URL="${{ steps.latest.outputs.url }}"
+          cat <<EOF > MANUAL_BUILD.md
+          # Build and push bcl-convert $VERSION
+
+          Download the RPM from the following link (Illumina login required):
+          $URL
+
+          Then run the following commands to build and publish the Docker image:
+
+          curl -L "$URL" -o "bcl-convert-$VERSION-2.el7.x86_64.rpm"
+          docker build --build-arg BCLCONVERT_VERSION=$VERSION -t ctbushman/bcl_convert:$VERSION .
+          docker push ctbushman/bcl_convert:$VERSION
+          docker tag ctbushman/bcl_convert:$VERSION ctbushman/bcl_convert:latest
           docker push ctbushman/bcl_convert:latest
+          EOF
+      - name: Commit instructions
+        if: steps.check.outputs.exists == 'false'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add MANUAL_BUILD.md
+          git commit -m "Add manual build instructions for ${{ steps.latest.outputs.version }}"
+      - name: Create Pull Request
+        if: steps.check.outputs.exists == 'false'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Add manual build instructions for ${{ steps.latest.outputs.version }}"
+          title: "Update to bcl-convert ${{ steps.latest.outputs.version }}"
+          body: |
+            A new version of **bcl-convert** is available.
+            Download the RPM from:
+            ${{ steps.latest.outputs.url }}
+
+            Instructions to build and push the Docker image are in **MANUAL_BUILD.md**.
+          branch: update-${{ steps.latest.outputs.version }}
+
