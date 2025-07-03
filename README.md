@@ -50,17 +50,28 @@ scrapes Illumina's download page to locate the newest CentOS7 RPM.
 python3 get_latest_rpm_url.py
 ```
 
-Download that RPM into the repository and build the Docker image using the
-corresponding version number:
+Download that RPM (has to be done manually because Illumina requires you to login and verify you're a customer)
+and build the Docker image using the corresponding version number:
 
 ```bash
-# Download the RPM
-curl -LO "$(python3 get_latest_rpm_url.py)"
-
 # Extract the version from the file name
 VERSION=$(ls bcl-convert-*-2.el7.x86_64.rpm | sed -n 's/.*bcl-convert-\(.*\)-2.el7.x86_64.rpm/\1/p')
+# OR just do it manually e.g.
+VERSION=4.4.4
 
-docker build --build-arg BCLCONVERT_VERSION="$VERSION" -t bcl_convert .
+# Set your DockerHub channel (mine is ctbushman)
+DOCKERHUB_USERNAME=ctbushman
+
+# This will require having Docker installed and the daemon running
+docker build --build-arg BCLCONVERT_VERSION="$VERSION" -t $DOCKERHUB_USERNAME/bcl_convert:$VERSION .
 ```
 
 The Dockerfile expects the RPM to be present in the build context.
+
+Then push the image to DockerHub (this will require write access to the DockerHub channel you're trying to push to):
+
+```bash
+docker push $DOCKERHUB_USERNAME/bcl_convert:$VERSION
+docker tag $DOCKERHUB_USERNAME/bcl_convert:$VERSION $DOCKERHUB_USERNAME/bcl_convert:latest
+docker push $DOCKERHUB_USERNAME/bcl_convert:latest
+```
