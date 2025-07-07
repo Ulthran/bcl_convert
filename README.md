@@ -41,11 +41,29 @@ apptainer run -B "$PWD":/data bcl_convert.sif bcl-convert --help
 ### Running on Slurm with Apptainer
 
 When using a Slurm cluster, you can launch jobs with Apptainer by binding
-your working directory and specifying the container image:
+your working directory and specifying the container image. Create the below
+script and save it as something like `basecall.sh` (be sure to replace 
+elements like `--partition=defq` or `--account=hpcusers` with values specific 
+to your HPC:
 
 ```bash
-srun --container-image=bcl_convert.sif --container-workdir=$PWD \
-     bcl-convert --help
+#!/bin/bash
+#SBATCH --job-name=basecall
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=8G
+#SBATCH --time=24:00:00
+#SBATCH --partition=defq
+#SBATCH --account=hpcusers
+
+module load singularity
+
+singularity exec --bind $2:/data $1 bcl-convert --bcl-input-directory /data/ --output-directory /data/Data/Intensities/BaseCalls/
+```
+
+Then submit the script to your cluster:
+
+```bash
+sbatch basecall.sh /path/to/bcl_convert.sif /path/to/sequencing/dir/
 ```
 
 ## Building
