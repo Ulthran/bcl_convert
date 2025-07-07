@@ -49,15 +49,20 @@ to your HPC:
 ```bash
 #!/bin/bash
 #SBATCH --job-name=basecall
-#SBATCH --cpus-per-task=4
-#SBATCH --mem=8G
+#SBATCH --output=bclconvert_%j.out
+#SBATCH --cpus-per-task=16
+#SBATCH --mem=32G
 #SBATCH --time=24:00:00
 #SBATCH --partition=defq
 #SBATCH --account=hpcusers
 
 module load singularity
 
-singularity exec --bind $2:/data $1 bcl-convert --bcl-input-directory /data/ --output-directory /data/Data/Intensities/BaseCalls/
+# Upgrade the number of concurrent file handlers
+# Some clusters will set this low enough to cause BCL Convert issues
+ulimit -n 65536
+
+singularity exec --bind $2:/data $1 bcl-convert --bcl-input-directory /data/ --output-directory /data/Data/Intensities/Fastqs
 ```
 
 Then submit the script to your cluster:
