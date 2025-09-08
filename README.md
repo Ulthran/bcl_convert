@@ -62,7 +62,7 @@ module load singularity
 # Some clusters will set this low enough to cause BCL Convert issues
 ulimit -n 65536
 
-singularity exec --bind $2:/data $1 bcl-convert --bcl-input-directory /data/ --output-directory /data/Data/Intensities/Fastqs
+singularity exec --bind $2:/data $1 bcl-convert --bcl-input-directory /data/ --output-directory /data/Data/Intensities/Fastqs --create-fastq-for-index-reads
 ```
 
 Then submit the script to your cluster:
